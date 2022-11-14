@@ -31,7 +31,8 @@ First, new routes are set with a fixes schedule at climbing gyms.  Hence, there 
 
 Websites like [8a.nu](https://8a.nu) also provide route / grade pyramids.  Such pyramids are a visually representation of all ascents with respect to their ascent type and difficulty level.  As such, they could be good for dashboarding / visualizations of the climbing performance.
 
-[Professional climber Adam Ondra's grade pyramid](https://d3byf4kaqtov0k.cloudfront.net/news/636551553626856862_Namnl%C3%B6s.jpg)
+![Professional climber Adam Ondra's grade pyramid](https://d3byf4kaqtov0k.cloudfront.net/news/636551553626856862_Namnl%C3%B6s.jpg)
+
 Professional climber Adam Ondra's grade pyramid
 
 ### Intensity
