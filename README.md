@@ -33,7 +33,7 @@ Websites like [8a.nu](https://8a.nu) also provide route / grade pyramids.  Such 
 
 ![Professional climber Adam Ondra's grade pyramid](https://d3byf4kaqtov0k.cloudfront.net/news/636551553626856862_Namnl%C3%B6s.jpg)
 
-Professional climber Adam Ondra's grade pyramid
+_Figure: Professional climber Adam Ondra's grade pyramid_
 
 ### Intensity
 Similarly to performance, there is no dedicated metric that summarizes the climbing intensity correctly.  At first glance, the climbing intensity depends on the following variables:
