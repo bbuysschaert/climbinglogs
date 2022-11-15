@@ -4,7 +4,7 @@ import pandas as pd
 
 from typing import Literal
 
-def create_pyramid_basic(df: pd.DataFrame,
+def create_gradepyramid_basic(df: pd.DataFrame,
                         aggtype: Literal['sum', 'count'] = 'sum',
                         gradesystem: Literal['french', 'usa'] = 'french') -> pd.DataFrame:
     """
@@ -24,7 +24,7 @@ def create_pyramid_basic(df: pd.DataFrame,
            )
     return pyrm.reset_index()
 
-def create_pyramid(df: pd.DataFrame,
+def create_gradepyramid(df: pd.DataFrame,
                    aggtype: Literal['sum', 'count'] = 'sum',
                    gradesystem: Literal['french', 'usa'] = 'french') -> pd.DataFrame:
     """
