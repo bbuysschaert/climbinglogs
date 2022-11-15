@@ -25,13 +25,16 @@ def create_ordinalcats_usa() -> CategoricalDtype:
     Create a Pandas CategoricalDtype that defines the ordinal categeories of the climbing grades in the USA system
     """
     grades_usa = list(grades_dict['usa2french'].keys())
-    # Hack into the list, to have leading zeros and then remove them
+
+    # Hack into the list to have leading zeros to allow correct sorting
     grades_usa = [val.split('.') for val in grades_usa]
     grades_usa = ['.'.join([val[0], val[1].zfill(2)]) for val in grades_usa]
     grades_usa = sorted(grades_usa)
+
+    # Hack into the list to remove leading zeros
     grades_usa = [val.split('.') for val in grades_usa]
     grades_usa = ['.'.join([val[0], val[1].lstrip('0')]) for val in grades_usa]
-    
+
     return CategoricalDtype(categories=grades_usa, ordered=True)
 
 # Deprecated, should not be used
