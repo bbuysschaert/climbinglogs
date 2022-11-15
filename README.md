@@ -6,7 +6,7 @@ You are logging your indoor climbing sessions for further analysis.  These logs 
 ## Example of the data
 The logs are currently containing the following information:
 
-Date | Climbing gym | # in session | Route ID | Difficulty lvl | Send type | Style | Route info | # Blocks | # Falls | # Sends | Notes
+Date | Climbing gym | # in session | Route ID | Grade | Send type | Style | Route info | # Blocks | # Falls | # Sends | Notes
 ---- | ------------ | ------------ | -------- | -------------- | --------- | ----- | ---------- | -------- | ------- | ------- | -----
 14/11/2022 | XX | 1 | 1234 | 5.11d | Redpoint | Lead | roof | 0 | 0 | 1 | Hard crux
 14/11/2022 | XX | 2 | 1235 | 5.10d | Onsight  | Toprope | arrete | 0 | 0 | 1 | 
