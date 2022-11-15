@@ -36,8 +36,8 @@ def extract_climbinglogs(path: str, format: Literal['excel'] = 'excel', cols_ffi
     """
     Extract the climbing logs and retuns them as a Pandas DataFrame with the necessary data preparation.  This results in a highly specialised function.
     """
-    from .grades import convert_grade
-    from .grades import create_ordinalcats_french, create_ordinalcats_usa
+    from .grade import convert_grade
+    from .grade import create_ordinalcats_french, create_ordinalcats_usa
 
     # Perform extraction
     if format == 'excel':
