@@ -1,6 +1,6 @@
 import json
 
-with open('./grades.json') as ff:
+with open('./climb/grades.json') as ff:
     grades = json.load(ff)
 
 def convert_usa2french(val: str) -> str:
