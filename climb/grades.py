@@ -4,7 +4,7 @@ import json
 import re
 from pandas.api.types import CategoricalDtype
 
-from typing import List, Union
+from typing import List, Literal, Union
 
 # Read in the grade conversion file using the relative path
 # See https://stackoverflow.com/a/3718923/2931774
@@ -73,7 +73,7 @@ def get_gradesystem(val: str) -> str:
     else:
         return None
 
-def convert_grade(grade: str, desired: str = 'french') -> List[str]:
+def convert_grade(grade: str, desired: Literal['french', 'usa'] = 'french') -> Union[str, None]:
     """
     Convert the climbing grade from one system to another.
     - No conversion will take place when the grade is already in the desired system.

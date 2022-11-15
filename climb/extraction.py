@@ -4,7 +4,7 @@ import datetime as dt
 from pandas.api.types import CategoricalDtype
 import re
 
-from typing import List, Union
+from typing import List, Optional, Literal
 
 def create_ordinalcats_ascensions() -> CategoricalDtype:
     """
@@ -13,7 +13,7 @@ def create_ordinalcats_ascensions() -> CategoricalDtype:
     ascensions = ['flash', 'redpoint', 'repeat', 'topped', 'not topped']
     return CategoricalDtype(categories=ascensions, ordered=True)
 
-def clean_columnname(col: str, format='snake') -> str:
+def clean_columnname(col: str, format :Literal['snake'] = 'snake') -> str:
     """
     Clean the column name to the specified format.  Returns a string with the clean column name 
     """
@@ -32,7 +32,7 @@ def clean_columnname(col: str, format='snake') -> str:
     col = col.strip()
     return col
 
-def extract_climbinglogs(path: str, format: str ='excel', cols_ffill: Union[List[str], None] = None) -> pd.DataFrame:
+def extract_climbinglogs(path: str, format: Literal['excel'] = 'excel', cols_ffill: Optional[List[str]] = None) -> pd.DataFrame:
     """
     Extract the climbing logs and retuns them as a Pandas DataFrame with the necessary data preparation.  This results in a highly specialised function.
     """
@@ -72,7 +72,7 @@ def extract_climbinglogs(path: str, format: str ='excel', cols_ffill: Union[List
     
     return df
 
-def extract_sessionlogs(path: str, format: str ='excel') -> pd.DataFrame:
+def extract_sessionlogs(path: str, format: Literal['excel'] = 'excel') -> pd.DataFrame:
     """
     Extract the session logs and retuns them as a Pandas DataFrame
     """
