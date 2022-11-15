@@ -4,6 +4,26 @@ import pandas as pd
 
 from typing import Literal
 
+def create_pyramid_basic(df: pd.DataFrame,
+                        aggtype: Literal['sum', 'count'] = 'sum',
+                        gradesystem: Literal['french', 'usa'] = 'french') -> pd.DataFrame:
+    """
+    Aggregate the climbing logs to create a route pyramid per grade
+    """
+    assert aggtype in ['count', 'sum']
+    assert gradesystem in ['french', 'usa']
+    
+    # Determine the grade column
+    gradecol = 'grade_{}'.format(gradesystem)
+    
+    # Aggregate to the basic pyramid
+    pyrm = (df
+            .groupby(gradecol)
+            .agg(sends=('sends', aggtype),
+                )
+           )
+    return pyrm.reset_index()
+
 def create_pyramid(df: pd.DataFrame,
                    aggtype: Literal['sum', 'count'] = 'sum',
                    gradesystem: Literal['french', 'usa'] = 'french') -> pd.DataFrame:
@@ -16,7 +36,7 @@ def create_pyramid(df: pd.DataFrame,
     # Determine the grade column
     gradecol = 'grade_{}'.format(gradesystem)
     
-    # Aggregate the actual pyramid
+    # Aggregate to the actual pyramid
     pyrm = (df
             .groupby([gradecol, 'ascension_type'])
             .agg(sends=('sends', aggtype),
