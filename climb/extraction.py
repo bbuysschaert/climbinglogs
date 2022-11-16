@@ -49,11 +49,16 @@ def extract_climbinglogs(path: str, format: Literal['excel'] = 'excel', cols_ffi
     # Bookkeeping of column names
     df = df.rename(columns={cc:clean_columnname(cc) for cc in df.columns})
 
+    # Set datatypes if needed
+    df['date'] = pd.to_datetime(df['date'])
+    df['grade'] = [str(val) for val in df['grade']]
+
     # Perform forward filling for specific columns
     if cols_ffill:
         df.loc[:, cols_ffill] = df.loc[:, cols_ffill].ffill()
 
     # Fill mising values
+    df.loc[:, ['blocks', 'falls', 'sends']] = df.loc[:, ['blocks', 'falls', 'sends']].fillna(0)
     for cc in ['blocks', 'falls', 'sends']:
             df[cc] = pd.to_numeric(df[cc], downcast='integer')
 
