@@ -4,6 +4,16 @@ import pandas as pd
 
 from typing import Literal
 
+def get_maxgrade_flash(df: pd.DataFrame, gradesystem: Literal['french', 'usa'] = 'french') -> str:
+    """
+    Determine the maximum grade of logged flash ascents.
+    """
+    # Determine the grade column
+    gradecol = 'grade_{}'.format(gradesystem)
+    
+    temp = df[df['ascension_type'] == 'flash']
+    return temp[gradecol].max()
+
 def compute_gradepyramid_basic(df: pd.DataFrame,
                                aggtype: Literal['sum', 'count'] = 'sum',
                                gradesystem: Literal['french', 'usa'] = 'french') -> pd.DataFrame:
@@ -51,4 +61,4 @@ def compute_gradepyramid(df: pd.DataFrame,
     pyrm = pyrm.reset_index()
     temp = temp.reset_index()
     
-    return pyrm.merge(temp, on=[gradecol, 'ascension_type'], how='left')  
+    return pyrm.merge(temp, on=[gradecol, 'ascension_type'], how='left')
