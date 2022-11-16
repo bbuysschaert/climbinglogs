@@ -1,5 +1,6 @@
 # Dependencies
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MultipleLocator
 
 import pandas as pd
 import numpy as np
@@ -71,6 +72,8 @@ def plot_gradepyramid(df: pd.DataFrame,
         ax.set_ylim(['5.7', '5.13a'])
     
     ax.set_xlim([0, pyrm['sends_cumsum'].max() + 2])
+    ax.xaxis.set_major_locator(MultipleLocator(5))
+    ax.xaxis.set_minor_locator(MultipleLocator(1))
     
     return ax
 
@@ -110,6 +113,12 @@ def plot_doublegradepyramid(df: pd.DataFrame,
 
     xmax = max([ax1.get_xlim()[1], ax2.get_xlim()[1]])
     ax1.set_xlim([xmax, 0]); ax2.set_xlim([0, xmax])
+
+    ax1.xaxis.set_major_locator(MultipleLocator(5))
+    ax1.xaxis.set_minor_locator(MultipleLocator(1))
+    
+    ax2.xaxis.set_major_locator(MultipleLocator(5))
+    ax2.xaxis.set_minor_locator(MultipleLocator(1))
 
     return fig
 
