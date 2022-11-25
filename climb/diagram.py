@@ -32,7 +32,7 @@ def plot_gradepyramid(df: pd.DataFrame,
 
     # Create a figure in case it was not specified
     if ax == None:
-        fig = plt.figure(figsize=(16,16))
+        fig = plt.figure(figsize=(8,8))
         ax = fig.add_subplot(111)
     
     # Draw the grade pyramid (as a horizonal bar chart with annotations)
