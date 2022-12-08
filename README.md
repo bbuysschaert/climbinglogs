@@ -83,4 +83,6 @@ TBD
 - [Power Company: Non-ascent climbing metrics for climbers](https://www.powercompanyclimbing.com/blog/metrics-for-climbers)
 - [Power Company: Non-ascent climbing metrics for climbers and how to improve](https://www.powercompanyclimbing.com/blog/climb-harder-data)
 - [Finger strength analysis tool](https://strengthclimbing.com/finger-strength-analyzer/)
-- [Conversion between the different climbing grades](http://www.alpinist.com/p/online/grades)
+- [Conversion between the different climbing grades for free climbing - version 1](http://www.alpinist.com/p/online/grades)
+- [Conversion between the different climbing grades for free climbing - version Wikipedia](https://en.wikipedia.org/wiki/Grade_(climbing)#Free_climbing_2)
+- [Conversion between the different bouldering grades for free climbing - version Wikipedia](https://en.wikipedia.org/wiki/Grade_(climbing)#Bouldering_2)
