@@ -33,6 +33,9 @@ def create_grademap(grade_source: grades, grade_dest: grades, agg_method: Litera
 
     ASSUMPTION: assumess that grade_source and grade_dest are correctly sorted in the grades table!
     """
+    assert grade_source in ['french', 'usa', 'v-bouldering'], 'Desired grade system not known'
+    assert grade_dest in ['french', 'usa', 'v-bouldering'], 'Desired grade system not known'
+    
     grades = import_gradestable()
 
     # Extract the information from the grade table
@@ -122,7 +125,7 @@ def convert_grade(grade: str, desired: grades = 'french') -> Union[str, None]:
     The function should be applied as a pandas.Series.map operation
     """
     # Check whether desired system is known
-    assert desired in ['french', 'usa'], 'Desired grade system not known'
+    assert desired in ['french', 'usa', 'v-bouldering'], 'Desired grade system not known'
 
     # Get the grade system
     source = get_gradesystem(grade)
