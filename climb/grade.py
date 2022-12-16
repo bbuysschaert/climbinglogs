@@ -33,7 +33,7 @@ def create_grademap(agg_method: Literal['min', 'max']='max') -> dict:
     grades = import_gradestable()
 
     # Determine all permutations
-    perms = permutations(grades.columns, 2)
+    perms = permutations(['french', 'usa', 'v-bouldering'], 2)
 
     # Build the grade map
     grademap = {}
@@ -61,9 +61,7 @@ def create_ordinalcats_french() -> CategoricalDtype:
     """
     Create a Pandas CategoricalDtype that defines the ordinal categeories of the climbing grades in the French system
     """
-    grademap = create_grademap()
-
-    grades_fr = list(grademap['french2usa'].keys())
+    grades_fr = list(import_gradestable()['french'].unique())
     grades_fr = sorted(grades_fr)
     return CategoricalDtype(categories=grades_fr, ordered=True)
 
@@ -71,9 +69,7 @@ def create_ordinalcats_usa() -> CategoricalDtype:
     """
     Create a Pandas CategoricalDtype that defines the ordinal categeories of the climbing grades in the USA system
     """
-    grademap = create_grademap()
-
-    grades_usa = list(grademap['usa2french'].keys())
+    grades_usa = list(import_gradestable()['usa'].unique())
 
     # Hack into the list to have leading zeros to allow correct sorting
     grades_usa = [val.split('.') for val in grades_usa]
@@ -85,6 +81,15 @@ def create_ordinalcats_usa() -> CategoricalDtype:
     grades_usa = ['.'.join([val[0], val[1].lstrip('0')]) for val in grades_usa]
 
     return CategoricalDtype(categories=grades_usa, ordered=True)
+
+def create_ordinalcats_bouldering() -> CategoricalDtype:
+    """
+    Create a Pandas CategoricalDtype that defines the ordinal categeories of the climbing grades in the V-bouldering system
+    """
+    grades_v = list(import_gradestable()['usa'].unique())
+
+    return CategoricalDtype(categories=grades_v, ordered=True)
+
 
 def get_gradesystem(val: str) -> str:
     """
@@ -132,9 +137,6 @@ def convert_grade(grade: str, desired: grades = 'french') -> Union[str, None]:
         return None
     
 if __name__ == '__main__':
-    print(convert_usa2french('5.12b'))
-    print(convert_french2usa('7b'))
-
     import pandas as pd
     print(pd.Series(['5a', '5.10d', 'test']).apply(convert_grade, desired='french'))
     print(pd.Series(['5a', '5.10d']).apply(convert_grade, desired='usa'))
