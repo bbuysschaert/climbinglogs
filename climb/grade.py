@@ -24,34 +24,42 @@ def import_gradestable(gradetable: str = 'grades.csv', sep: Literal[';', ','] = 
     grades = pd.read_csv(os.path.join(file_path, gradetable), sep=sep)
     return grades
 
-def create_grademap(grade_source: grades, grade_dest: grades, agg_method: Literal['min', 'max']='min') -> dict:
+def create_grademap(agg_method: Literal['min', 'max']='max') -> dict:
     """
-    Converts the grades table into a mapping dictionary to translate grade_source into grade_dest.
+    Converts the grades table into a mapping dictionary.
     Method determines what to do when grade_source matches multiple grade_dest:
     - method='min' -> take the lowest grade_dest
     - method='max' -> take the highest grade_dest
 
     ASSUMPTION: assumess that grade_source and grade_dest are correctly sorted in the grades table!
     """
-    assert grade_source in ['french', 'usa', 'v-bouldering'], 'Desired grade system not known'
-    assert grade_dest in ['french', 'usa', 'v-bouldering'], 'Desired grade system not known'
+    from itertools import permutations
 
+    # Read in the table
     grades = import_gradestable()
 
-    # Extract the information from the grade table
-    temp = [(ss, dd) for ss, dd in zip(grades[grade_source], grades[grade_dest])]
-    
-    # Convert the list of tuples to a dict
+    # Determine all permutations
+    perms = permutations(grades.columns, 2)
+
+    # Build the grade map
     grademap = {}
-    for kk, vv in temp:
-        if kk not in grademap:
-            grademap[kk] = vv
-        elif agg_method == 'min':
-            pass
-        elif agg_method == 'max':
-            grademap[kk] = vv
-        else:
-            raise LookupError('Something went wrong when creating the grademap')
+    for grade_source, grade_dest in perms:
+        templist = [(ss, dd) for ss, dd in zip(grades[grade_source], grades[grade_dest])]
+    
+        # Convert the list of tuples to a dict
+        tempdict = {}
+        for kk, vv in templist:
+            if kk not in tempdict:
+                tempdict[kk] = vv
+            elif agg_method == 'min':
+                pass
+            elif agg_method == 'max':
+                tempdict[kk] = vv
+            else:
+                raise LookupError(f'Something went wrong when creating the grademap for {grade_source}2{grade_dest}')
+
+        # Add to grade map
+        grademap[f'{grade_source}2{grade_dest}'] = tempdict
 
     return grademap
 
