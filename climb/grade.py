@@ -61,7 +61,9 @@ def create_ordinalcats_french() -> CategoricalDtype:
     """
     Create a Pandas CategoricalDtype that defines the ordinal categeories of the climbing grades in the French system
     """
-    grades_fr = list(grades_dict['french2usa'].keys())
+    grademap = create_grademap()
+
+    grades_fr = list(grademap['french2usa'].keys())
     grades_fr = sorted(grades_fr)
     return CategoricalDtype(categories=grades_fr, ordered=True)
 
@@ -69,7 +71,9 @@ def create_ordinalcats_usa() -> CategoricalDtype:
     """
     Create a Pandas CategoricalDtype that defines the ordinal categeories of the climbing grades in the USA system
     """
-    grades_usa = list(grades_dict['usa2french'].keys())
+    grademap = create_grademap()
+
+    grades_usa = list(grademap['usa2french'].keys())
 
     # Hack into the list to have leading zeros to allow correct sorting
     grades_usa = [val.split('.') for val in grades_usa]
@@ -115,10 +119,11 @@ def convert_grade(grade: str, desired: grades = 'french') -> Union[str, None]:
 
     # Get the grade system
     source = get_gradesystem(grade)
+    grademap = create_grademap()
     
     # Determine whether it is known and whether different from desired
     if (source != None) & (source != desired):
-        return grades_dict['{}2{}'.format(source, desired)][grade]
+        return grademap['{}2{}'.format(source, desired)][grade]
 
     elif (source != None) & (source == desired):
         return grade
