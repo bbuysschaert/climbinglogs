@@ -8,12 +8,6 @@ import pandas as pd
 from typing import List, Literal, Union
 grades = Literal['french', 'usa', 'v-bouldering']
 
-# Read in the grade conversion file using the relative path
-# See https://stackoverflow.com/a/3718923/2931774
-file_path = os.path.dirname(os.path.realpath(__file__))
-with open(os.path.join(file_path, 'grades.json')) as ff:
-    grades_dict = json.load(ff)
-
 def import_gradestable(gradetable: str = 'grades.csv', sep: Literal[';', ','] = ';') -> pd.DataFrame:
     """Read in the grades table and return it as a dataframe"""
 
@@ -87,24 +81,6 @@ def create_ordinalcats_usa() -> CategoricalDtype:
     grades_usa = ['.'.join([val[0], val[1].lstrip('0')]) for val in grades_usa]
 
     return CategoricalDtype(categories=grades_usa, ordered=True)
-
-# Deprecated, should not be used
-def convert_usa2french(val: str) -> str:
-    """
-    Convert a climbing grade from the USA scale to French Font scale
-    >>> convert_usa2french('5.12b')
-    '7b'
-    """
-    return grades_dict['usa2french'][val]
-
-# Deprecated, should not be used
-def convert_french2usa(val: str) -> str:
-    """
-    Convert a climbing grade from the French Font scale to the USA scale 
-    >>> convert_usa2french('7b')
-    '5.12b'
-    """
-    return grades_dict['french2usa'][val]
 
 def get_gradesystem(val: str) -> str:
     """
