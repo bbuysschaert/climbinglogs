@@ -67,7 +67,7 @@ def plot_gradepyramid(df: pd.DataFrame,
     ax.set_ylabel('Climbing grade ({} system)'.format(gradesystem), fontsize='large')
     
     if gradesystem == 'french':
-        ax.set_ylim(['4', '7c'])
+        ax.set_ylim(['4c', '7c'])
     elif gradesystem == 'usa':
         ax.set_ylim(['5.7', '5.13a'])
     
