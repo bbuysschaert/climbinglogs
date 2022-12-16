@@ -90,6 +90,20 @@ def create_ordinalcats_bouldering() -> CategoricalDtype:
 
     return CategoricalDtype(categories=grades_v, ordered=True)
 
+def create_grademap_plotting(gradesystem: grades) -> dict:
+    """
+    Create a dictionary that can be used for plotting the ordinalcats of the grade system
+    """
+    assert gradesystem in ['french', 'usa', 'v-bouldering'], 'Desired grade system not known'
+    
+    if gradesystem == 'french':
+        cats = create_ordinalcats_french().categories
+    elif gradesystem == 'usa':
+        cats = create_ordinalcats_usa().categories
+    elif gradesystem == 'v-bouldering':
+        cats = create_ordinalcats_bouldering().categories
+
+    return {kk:vv for kk, vv in zip(cats, range(len(cats)))}
 
 def get_gradesystem(val: str) -> str:
     """
