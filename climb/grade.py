@@ -3,14 +3,54 @@ import os
 import json
 import re
 from pandas.api.types import CategoricalDtype
+import pandas as pd
 
 from typing import List, Literal, Union
+grades = Literal['french', 'usa', 'v-bouldering']
 
 # Read in the grade conversion file using the relative path
 # See https://stackoverflow.com/a/3718923/2931774
 file_path = os.path.dirname(os.path.realpath(__file__))
 with open(os.path.join(file_path, 'grades.json')) as ff:
     grades_dict = json.load(ff)
+
+def import_gradestable(gradetable: str = 'grades.csv', sep: Literal[';', ','] = ';') -> pd.DataFrame:
+    """Read in the grades table and return it as a dataframe"""
+
+    # Read in the grade conversion file using the relative path
+    # See https://stackoverflow.com/a/3718923/2931774
+    file_path = os.path.dirname(os.path.realpath(__file__))
+
+    grades = pd.read_csv(os.path.join(file_path, gradetable), sep=sep)
+    return grades
+
+def create_grademap(grade_source: grades, grade_dest: grades, agg_method: Literal['min', 'max']='min') -> dict:
+    """
+    Converts the grades table into a mapping dictionary to translate grade_source into grade_dest.
+    Method determines what to do when grade_source matches multiple grade_dest:
+    - method='min' -> take the lowest grade_dest
+    - method='max' -> take the highest grade_dest
+
+    ASSUMPTION: assumess that grade_source and grade_dest are correctly sorted in the grades table!
+    """
+    grades = import_gradestable()
+
+    # Extract the information from the grade table
+    temp = [(ss, dd) for ss, dd in zip(grades[grade_source], grades[grade_dest])]
+    
+    # Convert the list of tuples to a dict
+    grademap = {}
+    for kk, vv in temp:
+        if kk not in grademap:
+            grademap[kk] = vv
+        elif agg_method == 'min':
+            pass
+        elif agg_method == 'max':
+            grademap[kk] = vv
+        else:
+            raise LookupError('Something went wrong when creating the grademap')
+
+    return grademap
 
 def create_ordinalcats_french() -> CategoricalDtype:
     """
@@ -73,7 +113,7 @@ def get_gradesystem(val: str) -> str:
     else:
         return None
 
-def convert_grade(grade: str, desired: Literal['french', 'usa'] = 'french') -> Union[str, None]:
+def convert_grade(grade: str, desired: grades = 'french') -> Union[str, None]:
     """
     Convert the climbing grade from one system to another.
     - No conversion will take place when the grade is already in the desired system.
