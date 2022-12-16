@@ -35,7 +35,7 @@ def create_grademap(grade_source: grades, grade_dest: grades, agg_method: Litera
     """
     assert grade_source in ['french', 'usa', 'v-bouldering'], 'Desired grade system not known'
     assert grade_dest in ['french', 'usa', 'v-bouldering'], 'Desired grade system not known'
-    
+
     grades = import_gradestable()
 
     # Extract the information from the grade table
@@ -113,6 +113,8 @@ def get_gradesystem(val: str) -> str:
         return 'usa'
     elif re.search('^\d{1}[abc]{0,1}\+{0,1}$', val):
         return 'french'
+    elif re.search('(^VB$)|(^V\d{1,2}\+{0,1}$)', val):
+        return 'v-bouldering'
     else:
         return None
 
