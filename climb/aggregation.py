@@ -94,7 +94,8 @@ def compute_weeklysummary(df: pd.DataFrame, gradesystem: grades = 'french', styl
     - max grade topped
     - min grade topped
     - max grade climbed per ascension type (flash, redpoint, repeat)
-    - median grade climbed per ascension type (flas, redpoint, repeat)
+    - median grade climbed per ascension type (flash, redpoint, repeat)
+    - median grade climbed for flash, redpoint and repeat combined
     """
     assert style in ['route', 'boulder', 'lead', 'toprope'], 'specified climbing style not understood'
     assert gradesystem in ['french', 'usa']
@@ -123,10 +124,10 @@ def compute_weeklysummary(df: pd.DataFrame, gradesystem: grades = 'french', styl
     
     # Reset the grade to categorical data!
     if gradesystem == 'french':
-        from .grade import create_ordinalcats_french
+        from climb.grade import create_ordinalcats_french
         data[gradecol] = data[gradecol].astype(create_ordinalcats_french())
     elif gradesystem == 'usa':
-        from .grade import create_ordinalcats_usa
+        from climb.grade import create_ordinalcats_usa
         data[gradecol] = data[gradecol].astype(create_ordinalcats_usa())
     
     
@@ -153,8 +154,20 @@ def compute_weeklysummary(df: pd.DataFrame, gradesystem: grades = 'french', styl
            )
     temp.columns = [f'{ii}_{jj}'for ii, jj in temp.columns]
     
+    # Determine the median grade for flash, redpoint and repeat combined
+    cond = [vv in ['repeat', 'flash', 'redpoint'] for vv in data['ascension_type']]
+    temp2= (data[cond]
+            .groupby('week', as_index=False)
+            .agg(mediangrade = (gradecol, get_mediangrade)
+                )
+           )
+    
     # Combine the tables
     data_weekly = data_weekly.merge(temp,
+                                    on = 'week',
+                                    how = 'left' # Should always match, because it uses the same base table
+                                   )
+    data_weekly = data_weekly.merge(temp2,
                                     on = 'week',
                                     how = 'left' # Should always match, because it uses the same base table
                                    )
