@@ -15,8 +15,10 @@ def get_mediangrade(ds: pd.Series) -> str:
     """
     # Explicit median computation
     grades = ds.sort_values().to_list()
-
-    if len(grades) % 2 == 0:
+    
+    if len(grades) == 1:
+        return grades[0]
+    elif len(grades) % 2 == 0:
         return grades[int(len(grades) / 2)]
     elif len(grades) % 2 == 1:
         return grades[int((len(grades) + 1) / 2)]
