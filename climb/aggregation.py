@@ -3,6 +3,8 @@ import numpy as np
 import pandas as pd
 
 from typing import Literal
+grades = Literal['french', 'usa', 'v-bouldering']
+styles = Literal['route', 'boulder', 'lead', 'toprope']
 
 def get_mediangrade(ds: pd.Series) -> str:
     """
@@ -15,7 +17,7 @@ def get_mediangrade(ds: pd.Series) -> str:
     """
     # Explicit median computation
     grades = ds.sort_values().to_list()
-    
+
     if len(grades) == 1:
         return grades[0]
     elif len(grades) % 2 == 0:
@@ -83,3 +85,78 @@ def compute_gradepyramid(df: pd.DataFrame,
     temp = temp.reset_index()
     
     return pyrm.merge(temp, on=[gradecol, 'ascension_type'], how='left')
+
+def compute_weeklysummary(df: pd.DataFrame, gradesystem: grades = 'french', style: styles = 'route') -> pd.DataFrame:
+    """
+    Aggregate the climbing logs per week for high-level metrics.
+
+    The following metrics are computed:
+    - max grade topped
+    - min grade topped
+    - max grade climbed per ascension type (flash, redpoint, repeat)
+    - median grade climbed per ascension type (flas, redpoint, repeat)
+    """
+    assert style in ['route', 'boulder', 'lead', 'toprope'], 'specified climbing style not understood'
+    assert gradesystem in ['french', 'usa']
+    
+    # Determine the grade column
+    gradecol = 'grade_{}'.format(gradesystem)
+    
+    # Subset the data to only account for the specified styles
+    if style == 'route':
+        data = df[(df['style'] == 'lead') | (df['style'] == 'toprope')]
+    else:
+        data = df[df['style'] == style]
+    
+    # Ignore routes that were not topped
+    data = data[data['ascension_type'] != 'not topped']
+    
+    # Add week information, by getting the first monday of that week
+    # https://stackoverflow.com/a/35613515/2931774
+    data['week'] = data['date'].dt.to_period('W-MON').apply(lambda r: r.start_time)
+    
+    # Repeat records to account for repeated routes
+    data = pd.DataFrame(data.values.repeat(data.sends, axis=0),
+                        columns = data.columns
+                       )
+    
+    
+    # Reset the grade to categorical data!
+    if gradesystem == 'french':
+        from .grade import create_ordinalcats_french
+        data[gradecol] = data[gradecol].astype(create_ordinalcats_french())
+    elif gradesystem == 'usa':
+        from .grade import create_ordinalcats_usa
+        data[gradecol] = data[gradecol].astype(create_ordinalcats_usa())
+    
+    
+    # Only account for needed information
+    data = data.loc[:, ['date', 'week', 'grade', gradecol, 'route', 'style', 'ascension_type']]
+    
+    # Determine max / min grade per week
+    data_weekly = (data
+                   .groupby('week', as_index=False)
+                   .agg(maxgrade = (gradecol, 'max'),
+                        mingrade = (gradecol, 'min')
+                       )
+                  )
+    
+    # Determine max and median grade per ascenion type
+    temp = (data
+            .groupby(['week', 'ascension_type'], as_index=False)
+            .agg(maxgrade = (gradecol, 'max'),
+                 mediangrade = (gradecol, get_mediangrade)
+                )
+            .pivot(index='week',
+                  columns='ascension_type',
+                  values=['maxgrade', 'mediangrade'])
+           )
+    temp.columns = [f'{ii}_{jj}'for ii, jj in temp.columns]
+    
+    # Combine the tables
+    data_weekly = data_weekly.merge(temp,
+                                    on = 'week',
+                                    how = 'left' # Should always match, because it uses the same base table
+                                   )
+    
+    return data_weekly
