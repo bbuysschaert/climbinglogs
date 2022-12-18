@@ -5,6 +5,20 @@ from matplotlib.ticker import MultipleLocator
 import pandas as pd
 import numpy as np
 #from matplotlib.axes._subplots import AxesSubplot
+
+from matplotlib import rc, rcParams
+import matplotlib.gridspec as gridspec
+from matplotlib.ticker import MultipleLocator, FixedLocator, FixedFormatter
+rc('xtick', labelsize=15) 
+rc('ytick', labelsize=15) 
+rc("lines", markeredgewidth=2.0)
+rc("axes", linewidth=2.0)
+rc('font', family='serif')
+rcParams["font.size"] = 15
+rcParams['xtick.direction'] = 'out'
+rcParams['ytick.direction'] = 'out'
+
+
 from typing import Literal, Optional
 
 from .aggregation import compute_gradepyramid
