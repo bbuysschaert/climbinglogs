@@ -114,8 +114,9 @@ def compute_weeklysummary(df: pd.DataFrame, gradesystem: grades = 'french', styl
     
     # Add week information, by getting the first monday of that week
     # https://stackoverflow.com/a/35613515/2931774
-    data['week'] = data['date'].dt.to_period('W-MON').apply(lambda r: r.start_time)
-    
+    #data['week'] = data['date'].dt.to_period('W-MON').apply(lambda r: r.start_time)
+    data['week'] = data['date'].dt.to_period('W').apply(lambda r: r.start_time)
+
     # Repeat records to account for repeated routes
     data = pd.DataFrame(data.values.repeat(data.sends, axis=0),
                         columns = data.columns
@@ -173,3 +174,92 @@ def compute_weeklysummary(df: pd.DataFrame, gradesystem: grades = 'french', styl
                                    )
     
     return data_weekly
+
+def compute_monthlysummary(df: pd.DataFrame, gradesystem: grades = 'french', style: styles = 'route') -> pd.DataFrame:
+    """
+    Aggregate the climbing logs per month for high-level metrics.
+
+    The following metrics are computed:
+    - max grade topped
+    - min grade topped
+    - max grade climbed per ascension type (flash, redpoint, repeat)
+    - median grade climbed per ascension type (flash, redpoint, repeat)
+    - median grade climbed for flash, redpoint and repeat combined
+    """
+    assert style in ['route', 'boulder', 'lead', 'toprope'], 'specified climbing style not understood'
+    assert gradesystem in ['french', 'usa']
+    
+    # Determine the grade column
+    gradecol = 'grade_{}'.format(gradesystem)
+    
+    # Subset the data to only account for the specified styles
+    if style == 'route':
+        data = df[(df['style'] == 'lead') | (df['style'] == 'toprope')]
+    else:
+        data = df[df['style'] == style]
+    
+    # Ignore routes that were not topped
+    data = data[data['ascension_type'] != 'not topped']
+    
+    # Add week information, by getting the first monday of that week
+    # https://stackoverflow.com/a/35613515/2931774
+    #data['week'] = data['date'].dt.to_period('W-MON').apply(lambda r: r.start_time)
+    data['month'] = data['date'].dt.to_period('M').apply(lambda r: r.start_time)
+
+    # Repeat records to account for repeated routes
+    data = pd.DataFrame(data.values.repeat(data.sends, axis=0),
+                        columns = data.columns
+                       )
+    
+    
+    # Reset the grade to categorical data!
+    if gradesystem == 'french':
+        from climb.grade import create_ordinalcats_french
+        data[gradecol] = data[gradecol].astype(create_ordinalcats_french())
+    elif gradesystem == 'usa':
+        from climb.grade import create_ordinalcats_usa
+        data[gradecol] = data[gradecol].astype(create_ordinalcats_usa())
+    
+    
+    # Only account for needed information
+    data = data.loc[:, ['date', 'month', 'grade', gradecol, 'route', 'style', 'ascension_type']]
+    
+    # Determine max / min grade per week
+    data_monthly = (data
+                   .groupby('month', as_index=False)
+                   .agg(maxgrade = (gradecol, 'max'),
+                        mingrade = (gradecol, 'min')
+                       )
+                  )
+    
+    # Determine max and median grade per ascenion type
+    temp = (data
+            .groupby(['month', 'ascension_type'], as_index=False)
+            .agg(maxgrade = (gradecol, 'max'),
+                 mediangrade = (gradecol, get_mediangrade)
+                )
+            .pivot(index='month',
+                  columns='ascension_type',
+                  values=['maxgrade', 'mediangrade'])
+           )
+    temp.columns = [f'{ii}_{jj}'for ii, jj in temp.columns]
+    
+    # Determine the median grade for flash, redpoint and repeat combined
+    cond = [vv in ['repeat', 'flash', 'redpoint'] for vv in data['ascension_type']]
+    temp2= (data[cond]
+            .groupby('month', as_index=False)
+            .agg(mediangrade = (gradecol, get_mediangrade)
+                )
+           )
+    
+    # Combine the tables
+    data_monthly = data_monthly.merge(temp,
+                                    on = 'month',
+                                    how = 'left' # Should always match, because it uses the same base table
+                                   )
+    data_monthly = data_monthly.merge(temp2,
+                                    on = 'month',
+                                    how = 'left' # Should always match, because it uses the same base table
+                                   )
+    
+    return data_monthly

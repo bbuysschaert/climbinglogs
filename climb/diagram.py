@@ -23,7 +23,7 @@ from typing import Literal, Optional
 grades = Literal['french', 'usa', 'v-bouldering']
 styles = Literal['route', 'boulder', 'lead', 'toprope']
 
-from .aggregation import compute_gradepyramid, compute_weeklysummary
+from .aggregation import compute_gradepyramid, compute_weeklysummary, compute_monthlysummary
 from .extraction import create_ordinalcats_ascensions
 
 def plot_gradepyramid(df: pd.DataFrame, 
@@ -205,6 +205,77 @@ def plot_weeklysummary(df: pd.DataFrame, gradesystem: grades= 'french', style: s
     
     # Set label axis labels
     ax.set_xlabel('Week', fontsize='large')
+    ax.set_ylabel('Climbing grade ({} system)'.format(gradesystem), fontsize='large')
+    
+    return fig
+
+def plot_monthlysummary(df: pd.DataFrame, gradesystem: grades= 'french', style: styles = 'route', legend: bool = True):
+    """
+    Plot the monthly summary with high-level metrics as a matplotlib figure
+    """
+    # Compute the weekly summary
+    df_monthly = compute_monthlysummary(df, gradesystem=gradesystem, style=style).set_index('month')
+    
+    # Convert to plotting scale
+    from climb.grade import create_grademap_plotting
+    plotmap = create_grademap_plotting(gradesystem)
+    plotmap_inv = {vv:kk for kk, vv in plotmap.items()}
+    
+    # Apply plotting scale to all values
+    df_plot = df_monthly.copy()
+    df_plot = df_plot.replace({cc: plotmap for cc in df_plot})
+    
+    # Create figure    
+    fig = plt.figure(figsize=(16,8))
+    ax = fig.add_subplot(111)
+    
+    # Create the color codings
+    ascensions = create_ordinalcats_ascensions()
+    category_colors = plt.get_cmap('viridis')(np.linspace(0.0, 1., len(ascensions.categories)))
+    category_colors = {cat:col for cat, col in zip(ascensions.categories, category_colors)}
+    
+    # Plot the information
+    ax.fill_between(df_plot.index, df_plot['mingrade'], df_plot['maxgrade'],
+                    color='k', alpha=.2, edgecolor='k', label='grade interval climbed')
+    ax.plot(df_plot.index, df_plot['maxgrade_flash'],
+            marker='x', linestyle='-', color=category_colors['flash'], lw=3, alpha=.75, ms=10, mew=3,
+            label='max grade flash')
+    ax.plot(df_plot.index, df_plot['maxgrade_redpoint'],
+            marker='v', linestyle='--', color=category_colors['redpoint'], lw=3, alpha=.75, ms=10, mew=3,
+            label='max grade redpoint')
+    ax.plot(df_plot.index, df_plot['maxgrade_repeat'],
+            marker='^', linestyle=':', color=category_colors['repeat'], lw=3, alpha=.75, ms=10, mew=3,
+            label='max grade repeat')
+    ax.plot(df_plot.index, df_plot['mediangrade'],
+            'k-s', lw=3, alpha=.75, ms=10, mew=3,
+            label='median grade')
+    
+    ax.grid(color='k', alpha=.1)
+    
+    # Add a legend
+    if legend:
+        fig.legend(bbox_to_anchor=(0, 1),
+                loc='lower left', fontsize='large')   
+    
+    # Update the y-axis labels with the actual grades
+    grade_plotmin = df_monthly.min().min()
+    grade_plotmax = df_monthly.max().max()
+    labels = [plotmap_inv[ii] for ii in range(plotmap[grade_plotmin] - 2, plotmap[grade_plotmax] + 1, 1)]
+    # It is unclear why the additional -1 is needed for these label computations
+    # Likely due to the ticklabel object of matplotlib technically starting at index -1
+    
+    ax.set_ylim([plotmap[grade_plotmin] - 1, 
+                 plotmap[grade_plotmax] + 1
+                ])
+    
+    ax.yaxis.set_major_locator(MultipleLocator(1))
+    ax.set_yticklabels(labels)
+    
+    # Update the x-axis labels
+    #ax.xaxis.set_major_locator(MultipleLocator(14))
+    
+    # Set label axis labels
+    ax.set_xlabel('Month', fontsize='large')
     ax.set_ylabel('Climbing grade ({} system)'.format(gradesystem), fontsize='large')
     
     return fig
