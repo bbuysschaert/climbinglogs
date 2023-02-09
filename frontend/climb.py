@@ -18,7 +18,7 @@ def content_mainpage():
     )
 def sidebar_mainpage():
     st.sidebar.header('Main page')
-    
+
     file = st.sidebar.file_uploader('Upload your climbing logs here',
                             type='xlsx',
                             accept_multiple_files=False,
@@ -46,4 +46,7 @@ if __name__ == '__main__':
     # Run the application itself
     pageconfig_mainpage()
     content_mainpage()
-    sidebar_mainpage()
+    file = sidebar_mainpage()
+
+    import pandas as pd
+    st.dataframe(pd.read_excel(file))
