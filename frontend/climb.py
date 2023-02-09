@@ -11,7 +11,9 @@ def content_mainpage():
     """
     # Gym climbing logging application
 
-    Describe what you can find on this page
+    This app can be used to log your climbing progress and use it for subsequent analyses.
+
+    This app is currently still under 
     """
     )
 
