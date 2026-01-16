@@ -105,6 +105,22 @@ def create_grademap_plotting(gradesystem: grades) -> dict:
 
     return {kk:vv for kk, vv in zip(cats, range(len(cats)))}
 
+def create_grademap_8anu(gradesystem: grades) -> dict:
+    """
+    Create a dictionary that can be used for converting the grade scale to 8a.nu points
+    Note: This grademap does not account for the ascension type (onsight, flash, redpoint, ...)
+    """
+    assert gradesystem in ['french', 'usa', 'v-bouldering'], 'Desired grade system not known'
+
+    if gradesystem == 'french':
+        cats = create_ordinalcats_french().categories
+    elif gradesystem == 'usa':
+        cats = create_ordinalcats_usa().categories
+    elif gradesystem == 'v-bouldering':
+        cats = create_ordinalcats_bouldering().categories
+
+    return {kk:vv for kk, vv in zip(cats, list(import_gradestable()['8a_nu']))}
+
 def get_gradesystem(val: str) -> str:
     """
     Determine the grade system according to specified regular expressions.

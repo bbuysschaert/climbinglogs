@@ -64,7 +64,7 @@ def extract_climbinglogs(path: str, format: Literal['excel'] = 'excel', cols_ffi
 
     # Ensure certain columns are always in lower-case
     for cc in ['ascension_type', 'style', 'grade']:
-        df[cc] = [val.lower() for val in df[cc]]
+        df[cc] = [str(val).lower() for val in df[cc]]
 
     # Convert the grades to known systems
     df['grade_usa'] = df['grade'].apply(convert_grade, desired='usa')

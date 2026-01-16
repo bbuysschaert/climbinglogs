@@ -1,6 +1,5 @@
 # Dependencies
 import matplotlib.pyplot as plt
-from matplotlib.ticker import MultipleLocator
 
 import pandas as pd
 import numpy as np

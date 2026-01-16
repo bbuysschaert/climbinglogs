@@ -114,7 +114,7 @@ def compute_weeklysummary(df: pd.DataFrame, gradesystem: grades = 'french', styl
     
     # Add week information, by getting the first monday of that week
     # https://stackoverflow.com/a/35613515/2931774
-    #data['week'] = data['date'].dt.to_period('W-MON').apply(lambda r: r.start_time)
+    # data['week'] = data['date'].dt.to_period('W-MON').apply(lambda r: r.start_time)
     data['week'] = data['date'].dt.to_period('W').apply(lambda r: r.start_time)
 
     # Repeat records to account for repeated routes
