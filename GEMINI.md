@@ -25,3 +25,5 @@
 - **Docstrings:** Use **Numpy-style** documentation.
 - **Formatting:** Use `f-strings` over `.format()`.
 - **Typing:** (Optional Suggestion) Use Python type hints for better AI code generation.
+- **Programming style**: Functions instead of OOP, unless it is not possible otherwise.
+- **Strings**: Use double quotes instead of single quotes.
